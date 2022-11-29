@@ -31,3 +31,8 @@ scrape_configs:
   - job_name: "go-app"
     static_configs:
       - targets: ["go-app:8080"]
+
+  - job_name: "apisix"
+    static_configs:
+      - targets: ["apisix:9080"]
+    metrics_path: "/prometheus/metrics"

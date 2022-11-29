@@ -1,0 +1,15 @@
+routes:
+  - uri: /go-app
+    upstream:
+      type: roundrobin
+      nodes:
+        "go-app:8080": 1
+  - uri: /prometheus/metrics
+    plugins:
+      public-api:
+global_rules:
+  - id: 1
+    plugins:
+      prometheus:
+        prefer_name: true
+#END
