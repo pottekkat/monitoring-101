@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  go-app:
+    build: ./go-app
+    ports:
+      - "8080:8080"
+  prometheus:
+    image: prom/prometheus:v2.40.4
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./:/etc/prometheus
