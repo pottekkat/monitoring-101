@@ -48,14 +48,12 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	resp.Body.Close()
 
 	var m Response
-
 	json.Unmarshal(body, &m)
 
 	fmt.Fprintf(w, "%s!", m.Message)
 }
 
 func main() {
-
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/", HelloHandler)
 
