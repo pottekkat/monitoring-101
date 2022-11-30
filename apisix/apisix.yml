@@ -1,9 +1,14 @@
 routes:
-  - uri: /*
+  - uri: /hello/*
     upstream:
       type: roundrobin
       nodes:
         "go-app:8080": 1
+    plugins:
+      proxy-rewrite:
+        regex_uri:
+          - "/hello/(.*)"
+          - "/$1"
   - uri: /prometheus/metrics
     plugins:
       public-api:
