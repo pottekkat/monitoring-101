@@ -17,6 +17,11 @@ type Response struct {
 	Message string `json:"message"`
 }
 
+var (
+	lang = "en"
+	name = "John"
+)
+
 var pingCounter = promauto.NewCounter(
 	prometheus.CounterOpts{
 		Name: "go_app_request_count",
@@ -25,9 +30,10 @@ var pingCounter = promauto.NewCounter(
 )
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
-	lang := r.URL.String()
+	lang = r.URL.String()
+	name = r.URL.Query()["name"][0]
 
-	fmt.Println("Request for ", lang)
+	fmt.Println("Request for", lang, "with name", name)
 	pingCounter.Inc()
 
 	pUrl := os.Getenv("PYTHON_APP_URL")
@@ -50,7 +56,7 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	var m Response
 	json.Unmarshal(body, &m)
 
-	fmt.Fprintf(w, "%s!", m.Message)
+	fmt.Fprintf(w, "%s %s!", m.Message, name)
 }
 
 func main() {
