@@ -17,7 +17,7 @@ var (
 
 var pingCounter = promauto.NewCounter(
 	prometheus.CounterOpts{
-		Name: "ping_request_count",
+		Name: "go_app_request_count",
 		Help: "No of requests handled by the go-app",
 	},
 )
