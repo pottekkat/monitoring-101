@@ -32,6 +32,10 @@ scrape_configs:
     static_configs:
       - targets: ["go-app:8080"]
 
+  - job_name: "python-app"
+    static_configs:
+      - targets: ["python-app:8000"]
+
   - job_name: "apisix"
     static_configs:
       - targets: ["apisix:9080"]

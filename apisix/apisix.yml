@@ -1,5 +1,5 @@
 routes:
-  - uri: /go-app
+  - uri: /*
     upstream:
       type: roundrobin
       nodes:

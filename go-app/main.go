@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
@@ -10,10 +13,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var (
-	port    = ":8080"
-	version = "v1.0"
-)
+type Response struct {
+	Message string `json:"message"`
+}
 
 var pingCounter = promauto.NewCounter(
 	prometheus.CounterOpts{
@@ -22,25 +24,40 @@ var pingCounter = promauto.NewCounter(
 	},
 )
 
-func root(w http.ResponseWriter, r *http.Request) {
+func HelloHandler(w http.ResponseWriter, r *http.Request) {
+	lang := r.URL.String()
+
+	fmt.Println("Request for ", lang)
 	pingCounter.Inc()
-	fmt.Fprintf(w, "Hello from API %s!\n", version)
-	fmt.Println("Endpoint Hit: root")
-}
-func handleRequests() {
-	http.HandleFunc("/", root)
-	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(port, nil)
+
+	pUrl := os.Getenv("PYTHON_APP_URL")
+	if len(pUrl) == 0 {
+		pUrl = "localhost"
+	}
+
+	resp, err := http.Get("http://" + pUrl + ":8000" + lang)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	resp.Body.Close()
+
+	var m Response
+
+	json.Unmarshal(body, &m)
+
+	fmt.Fprintf(w, "%s!", m.Message)
 }
 
 func main() {
-	if len(os.Args) > 1 {
-		port = ":" + os.Args[1]
-		if len(os.Args) > 2 {
-			version = os.Args[2]
-		}
-	}
-	fmt.Printf("API version: %s\n", version)
-	fmt.Println("Listening on port", port)
-	handleRequests()
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/", HelloHandler)
+
+	http.ListenAndServe(":8080", nil)
 }

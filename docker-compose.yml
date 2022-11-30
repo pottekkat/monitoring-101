@@ -10,8 +10,14 @@ services:
       - "9080:9080"
   go-app:
     build: ./go-app
+    environment:
+      - PYTHON_APP_URL=python-app
     ports:
       - "8080:8080"
+  python-app:
+    build: ./python-app
+    ports:
+      - "8000:8000"
   prometheus:
     image: prom/prometheus:v2.40.4
     ports:
