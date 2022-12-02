@@ -7,6 +7,7 @@ app = FastAPI()
 
 hello = {"en": "Hello", "fr": "Bonjour", "es": "Hola", "ml": "ഹലോ"}
 
+# expose the default Python metrics to the /metrics endpoint
 Instrumentator().instrument(app).expose(app)
 
 @app.get("/{lang}")

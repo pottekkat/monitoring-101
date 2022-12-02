@@ -1,17 +1,21 @@
 routes:
+  # route requests to /hello/* to the go-app
   - uri: /hello/*
     upstream:
       type: roundrobin
       nodes:
         "go-app:8080": 1
     plugins:
+      # remove the prefix "/hello" before forwarding the request to the go-app 
       proxy-rewrite:
         regex_uri:
           - "/hello/(.*)"
           - "/$1"
+  # export Prometheus metrics to the specified URI
   - uri: /prometheus/metrics
     plugins:
       public-api:
+# enable the Prometheus Plugin globally on all Routes
 global_rules:
   - id: 1
     plugins:
